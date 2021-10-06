@@ -1,4 +1,4 @@
-const { connectDB } = require('.db')
+const { connectDB } = require('./db')
 
 exports.createCustomer = (req, res) => {
    if(!req.body.fName || !req.body.lName || !req.body.email) {
@@ -20,4 +20,16 @@ exports.createCustomer = (req, res) => {
    db.collection('customers').add(newCustomer)
    .then(docRef => res.status(201).send({id: docRef.id}))
    .catch(err => res.status(500).send(err))
+  }
+
+  exports.getCustomerById = (req, res) => {
+    const db = connectDB()
+    const { customerId } = req.params
+    db.collection('customers').doc(customerId).get()
+    .then(doc => {
+      let customer = doc.data()
+      customer.id = doc.id
+      return customer
+    })
+    .catch(err => res.status(500).send(err))
   }
